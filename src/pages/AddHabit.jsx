@@ -21,7 +21,6 @@ const AddHabit = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
 
-    // Form state
     const [title, setTitle] = useState('');
     const [category, setCategory] = useState('');
     const [frequency, setFrequency] = useState('1');
@@ -30,7 +29,6 @@ const AddHabit = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Basic validation
         if (!title.trim() || !category) {
             toast.error("Please fill in the title and category");
             return;

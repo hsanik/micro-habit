@@ -77,7 +77,7 @@ const MyHabits = () => {
                         {habits.map(habit => (
                             <HabitCard
                                 key={habit._id}
-                                habit={{ ...habit, id: habit._id }} // map _id to id for the component
+                                habit={{ ...habit, id: habit._id }}
                                 onDelete={handleDelete}
                             />
                         ))}

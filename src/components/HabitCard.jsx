@@ -22,7 +22,6 @@ const HabitCard = ({ habit, onDelete, showActions = true }) => {
             } catch (error) {
                 console.error("Failed to update progress:", error);
                 toast.error("Failed to log progress!");
-                // Revert optimistic update
                 setProgressCount(progressCount);
             }
         }

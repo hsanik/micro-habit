@@ -54,8 +54,8 @@ const AllHabits = () => {
                         {habits.map(habit => (
                             <HabitCard
                                 key={habit._id}
-                                habit={{ ...habit, id: habit._id }} // Mapping _id to id
-                                showActions={false} // Don't let users delete or complete other peoples habits
+                                habit={{ ...habit, id: habit._id }}
+                                showActions={false}
                             />
                         ))}
                     </div>
