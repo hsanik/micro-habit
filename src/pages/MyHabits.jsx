@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router';
-import { Plus, ListChecks } from 'lucide-react';
+import { Plus, ListChecks, Activity, CheckCircle2, TrendingUp } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
 import HabitCard from '../components/HabitCard';
 import { toast } from 'react-toastify';
@@ -49,6 +49,12 @@ const MyHabits = () => {
         );
     }
 
+    // Analytics Calculations
+    const totalHabits = habits.length;
+    const completedHabits = habits.filter(h => h.currentCount >= h.frequency).length;
+    const pendingHabits = totalHabits - completedHabits;
+    const completionRate = totalHabits === 0 ? 0 : Math.round((completedHabits / totalHabits) * 100);
+
     return (
         <div className="flex flex-col min-h-[calc(100vh-140px)] bg-slate-50 dark:bg-slate-900 p-4 py-8">
             <div className="max-w-6xl mx-auto w-full space-y-6">
@@ -70,6 +76,52 @@ const MyHabits = () => {
                         </Button>
                     </Link>
                 </div>
+
+                {/* Analytics Dashboard Segment */}
+                {habits.length > 0 && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <Card className="border-0 ring-1 ring-slate-200 dark:ring-slate-800 shadow-sm">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Total Habits</CardTitle>
+                                <ListChecks className="h-4 w-4 text-slate-500" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{totalHabits}</div>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Active tracking goals</p>
+                            </CardContent>
+                        </Card>
+                        <Card className="border-0 ring-1 ring-slate-200 dark:ring-slate-800 shadow-sm">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Completed</CardTitle>
+                                <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{completedHabits}</div>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Daily targets met</p>
+                            </CardContent>
+                        </Card>
+                        <Card className="border-0 ring-1 ring-slate-200 dark:ring-slate-800 shadow-sm">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+                                <Activity className="h-4 w-4 text-amber-500" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{pendingHabits}</div>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Left to complete today</p>
+                            </CardContent>
+                        </Card>
+                        <Card className="border-0 ring-1 ring-slate-200 dark:ring-slate-800 shadow-sm">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
+                                <TrendingUp className="h-4 w-4 text-indigo-500" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{completionRate}%</div>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Overall progress</p>
+                            </CardContent>
+                        </Card>
+                    </div>
+                )}
 
                 {/* Habits Grid */}
                 {habits.length > 0 ? (
