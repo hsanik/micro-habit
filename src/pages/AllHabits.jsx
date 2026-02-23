@@ -1,61 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import HabitCard from '../components/HabitCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardTitle, CardDescription } from '@/components/ui/card';
 import { Link } from 'react-router';
-import { Plus, Users } from 'lucide-react';
-
-// TODO: Replace with actual backend call
-const PUBLIC_HABITS = [
-    {
-        id: "public-1",
-        title: "Read Technical Articles",
-        category: "learning",
-        frequency: 1,
-        currentCount: 0,
-        description: "Read at least one coding or system design article per day.",
-        userEmail: "anotheruser@example.com",
-        userName: "Alex Dev",
-        createdAt: new Date().toISOString()
-    },
-    {
-        id: "public-2",
-        title: "10K Steps",
-        category: "health",
-        frequency: 2,
-        currentCount: 1,
-        description: "Hit 5k steps by lunch, 10k by dinner.",
-        userEmail: "healthfreak@example.com",
-        userName: "Sarah Fitness",
-        createdAt: new Date().toISOString()
-    },
-    {
-        id: "public-3",
-        title: "No Spend Day",
-        category: "finance",
-        frequency: 1,
-        currentCount: 0,
-        description: "Buy absolutely zero non-essential items today.",
-        userEmail: "saver@example.com",
-        userName: "Finance Bro",
-        createdAt: new Date().toISOString()
-    },
-    {
-        id: "public-4",
-        title: "Meditate for 10 minutes",
-        category: "mindfulness",
-        frequency: 1,
-        currentCount: 1,
-        description: "Clear my mind every morning before opening any screens.",
-        userEmail: "zen@example.com",
-        userName: "Zen Master",
-        createdAt: new Date().toISOString()
-    }
-];
+import { Plus, Users, Loader2 } from 'lucide-react';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const AllHabits = () => {
-    // TODO: Replace with actual backend call
-    const [habits] = useState(PUBLIC_HABITS);
+    const [habits, setHabits] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        axios.get(`${import.meta.env.VITE_API_URL}/habits`)
+            .then(res => {
+                setHabits(res.data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error(err);
+                toast.error("Failed to fetch community habits");
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex min-h-[calc(100vh-140px)] items-center justify-center">
+                <Loader2 className="h-10 w-10 animate-spin text-indigo-600" />
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col min-h-[calc(100vh-140px)] bg-slate-50 dark:bg-slate-900 p-4 py-8">
@@ -78,8 +53,8 @@ const AllHabits = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
                         {habits.map(habit => (
                             <HabitCard
-                                key={habit.id}
-                                habit={habit}
+                                key={habit._id}
+                                habit={{ ...habit, id: habit._id }} // Mapping _id to id
                                 showActions={false} // Don't let users delete or complete other peoples habits
                             />
                         ))}

@@ -5,15 +5,26 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Check, Edit, Trash2 } from 'lucide-react';
 import { Link } from 'react-router';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const HabitCard = ({ habit, onDelete, showActions = true }) => {
     const [progressCount, setProgressCount] = useState(habit.currentCount || 0);
 
     const isCompleted = progressCount >= habit.frequency;
 
-    const handleCheck = () => {
+    const handleCheck = async () => {
         if (!isCompleted) {
-            setProgressCount(prev => prev + 1);
+            const newCount = progressCount + 1;
+            setProgressCount(newCount);
+            try {
+                await axios.patch(`${import.meta.env.VITE_API_URL}/habits/${habit.id}`, { currentCount: newCount });
+            } catch (error) {
+                console.error("Failed to update progress:", error);
+                toast.error("Failed to log progress!");
+                // Revert optimistic update
+                setProgressCount(progressCount);
+            }
         }
     };
 
@@ -63,8 +74,8 @@ const HabitCard = ({ habit, onDelete, showActions = true }) => {
                         onClick={handleCheck}
                         disabled={isCompleted}
                         className={`flex-1 transition-all ${isCompleted
-                                ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-900/50 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"
-                                : "bg-indigo-600 hover:bg-indigo-700 text-white"
+                            ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-900/50 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"
+                            : "bg-indigo-600 hover:bg-indigo-700 text-white"
                             }`}
                     >
                         {isCompleted ? (

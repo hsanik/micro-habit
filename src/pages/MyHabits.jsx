@@ -6,48 +6,48 @@ import { Plus, ListChecks } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
 import HabitCard from '../components/HabitCard';
 import { toast } from 'react-toastify';
-
-// Dummy data to visualize UI before backend integration
-const DUMMY_HABITS = [
-    {
-        id: "1",
-        title: "Drink Water Early",
-        category: "health",
-        frequency: 2,
-        currentCount: 1,
-        description: "Drink 2 glasses of water right after waking up.",
-        createdAt: new Date().toISOString()
-    },
-    {
-        id: "2",
-        title: "Read Technical Articles",
-        category: "learning",
-        frequency: 1,
-        currentCount: 0,
-        description: "Read at least one coding or system design article per day.",
-        createdAt: new Date().toISOString()
-    },
-    {
-        id: "3",
-        title: "Meditate for 10 minutes",
-        category: "mindfulness",
-        frequency: 1,
-        currentCount: 1,
-        description: "",
-        createdAt: new Date().toISOString()
-    }
-];
+import axios from 'axios';
+import { Loader2 } from 'lucide-react';
 
 const MyHabits = () => {
     const { user } = useContext(AuthContext);
 
-    // TODO: this will be fetched from MongoDB
-    const [habits, setHabits] = useState(DUMMY_HABITS);
+    const [habits, setHabits] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const handleDelete = (id) => {
-        setHabits(prev => prev.filter(habit => habit.id !== id));
-        toast.info("Habit removed successfully.");
+    React.useEffect(() => {
+        if (user?.email) {
+            axios.get(`${import.meta.env.VITE_API_URL}/habits/user/${user.email}`)
+                .then(res => {
+                    setHabits(res.data);
+                    setLoading(false);
+                })
+                .catch(err => {
+                    console.error(err);
+                    toast.error("Failed to fetch your habits");
+                    setLoading(false);
+                });
+        }
+    }, [user?.email]);
+
+    const handleDelete = async (id) => {
+        try {
+            await axios.delete(`${import.meta.env.VITE_API_URL}/habits/${id}`);
+            setHabits(prev => prev.filter(habit => habit._id !== id));
+            toast.info("Habit removed successfully.");
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to delete habit");
+        }
     };
+
+    if (loading) {
+        return (
+            <div className="flex min-h-[calc(100vh-140px)] items-center justify-center">
+                <Loader2 className="h-10 w-10 animate-spin text-indigo-600" />
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col min-h-[calc(100vh-140px)] bg-slate-50 dark:bg-slate-900 p-4 py-8">
@@ -76,8 +76,8 @@ const MyHabits = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
                         {habits.map(habit => (
                             <HabitCard
-                                key={habit.id}
-                                habit={habit}
+                                key={habit._id}
+                                habit={{ ...habit, id: habit._id }} // map _id to id for the component
                                 onDelete={handleDelete}
                             />
                         ))}

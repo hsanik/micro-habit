@@ -12,6 +12,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { toast } from 'react-toastify';
+import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 import { useNavigate } from 'react-router';
 
@@ -48,13 +49,7 @@ const AddHabit = () => {
         };
 
         try {
-            // TODO: In the future, send this payload to your Express backend:
-            // await axios.post(`${BASE_URL}/habits`, newHabit);
-
-            console.log("Submitting Habit Payload:", newHabit);
-
-            // Simulating a network request delay
-            await new Promise(resolve => setTimeout(resolve, 800));
+            await axios.post(`${import.meta.env.VITE_API_URL}/habits`, newHabit);
 
             toast.success('Habit added successfully!');
             navigate('/my-habits');

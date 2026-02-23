@@ -12,6 +12,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { toast } from 'react-toastify';
+import axios from 'axios';
 import { useNavigate, useParams } from 'react-router';
 import { Loader2 } from 'lucide-react';
 
@@ -28,24 +29,15 @@ const UpdateHabit = () => {
     const [description, setDescription] = useState('');
 
     useEffect(() => {
-        // TODO: Replace with actual backend call
         const fetchHabit = async () => {
             try {
-                // TODO: Replace with actual backend call
-                await new Promise(resolve => setTimeout(resolve, 600));
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/habits/${id}`);
+                const data = res.data;
 
-                // Simulated Response Data representing the habit they want to edit
-                const simulatedData = {
-                    title: "Drink Water Early",
-                    category: "health",
-                    frequency: 2,
-                    description: "Drink 2 glasses of water right after waking up."
-                };
-
-                setTitle(simulatedData.title);
-                setCategory(simulatedData.category);
-                setFrequency(simulatedData.frequency.toString());
-                setDescription(simulatedData.description);
+                setTitle(data.title);
+                setCategory(data.category);
+                setFrequency(data.frequency.toString());
+                setDescription(data.description);
                 setFetching(false);
             } catch (error) {
                 console.error("Failed to fetch habit details", error);
@@ -75,9 +67,7 @@ const UpdateHabit = () => {
         };
 
         try {
-            // TODO: Replace with actual backend PUT/PATCH call
-            console.log("Submitting Habit Edit Payload:", updatedData);
-            await new Promise(resolve => setTimeout(resolve, 800));
+            await axios.patch(`${import.meta.env.VITE_API_URL}/habits/${id}`, updatedData);
 
             toast.success('Habit updated successfully!');
             navigate('/my-habits');
