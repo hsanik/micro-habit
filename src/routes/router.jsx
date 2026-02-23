@@ -9,6 +9,7 @@ import AddHabit from '../pages/AddHabit'
 import HabitDetails from '../pages/HabitDetails'
 import UpdateHabit from '../pages/UpdateHabit'
 import MyHabits from '../pages/MyHabits'
+import PrivateRoute from './PrivateRoute'
 
 const router = createBrowserRouter([
     {
@@ -43,8 +44,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: 'add',
-                        // We will wrap these with a <PrivateRoute> later
-                        element: <AddHabit />
+                        element: <PrivateRoute><AddHabit /></PrivateRoute>
                     },
                     {
                         path: ':id',
@@ -52,13 +52,13 @@ const router = createBrowserRouter([
                     },
                     {
                         path: ':id/edit',
-                        element: <UpdateHabit />
+                        element: <PrivateRoute><UpdateHabit /></PrivateRoute>
                     }
                 ]
             },
             {
                 path: 'my-habits',
-                element: <MyHabits />
+                element: <PrivateRoute><MyHabits /></PrivateRoute>
             }
         ]
     },
